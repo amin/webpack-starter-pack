@@ -4,10 +4,14 @@ const zip = require('zip-webpack-plugin');
 const clean = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const dirTree = require('directory-tree');
+
 
 const __ROOT = require('app-root-path').path;
 const __APP = path.join(__ROOT, "app");
 const __BUILD = path.join(__ROOT, "build");
+
+let pages = [];
 
 const config = merge(require('./common.config.js'), {
 
@@ -49,14 +53,25 @@ const config = merge(require('./common.config.js'), {
     root: __ROOT
   }),
 
-  new HtmlWebpackPlugin({
-        template: path.join(__APP, "views", "index.html"),
-        inject: 'true',
-        filename: path.join(__BUILD, "index.html"),
-      }),
       new MiniCssExtractPlugin({filename: "app.[chunkhash].css"})
 ]
 
 });
+
+const tree = dirTree(path.join(__ROOT, "app/views/"), {extensions:/\.hbs$/}, (item) => {
+    pages.push(item.name.replace(/\.[^/.]+$/, ""));
+});
+
+
+pages.forEach((file) => {
+
+  config.plugins.push(
+    new HtmlWebpackPlugin({
+          template: path.join(__APP, `views/${file}.hbs`),
+          inject: 'true',
+          filename: path.join(__BUILD, `${file}.html`),
+        }),
+  );
+}),
 
 module.exports = config;

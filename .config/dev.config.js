@@ -36,7 +36,7 @@ const config = merge(require('./common.config.js'), {
 });
 
 
-const tree = dirTree(path.join(__ROOT, "app/views/"), {extensions:/\.html$/}, (item) => {
+const tree = dirTree(path.join(__ROOT, "app/views/"), {extensions:/\.hbs$/}, (item) => {
     pages.push(item.name.replace(/\.[^/.]+$/, ""));
 });
 
@@ -45,7 +45,7 @@ pages.forEach((file) => {
 
   config.plugins.push(
     new HtmlWebpackPlugin({
-      template: path.join(__APP, `views/${file}.html`),
+      template: path.join(__APP, `views/${file}.hbs`),
       inject: 'true',
       filename: path.join(__DIST, `${file}.html`),
     })
